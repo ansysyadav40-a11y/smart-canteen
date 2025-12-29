@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Workmaster Online</title>
+   <link rel="icon" href="/images/workstreamlogos.svg" type="image/svg+xml">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/pica/9.0.1/pica.min.js" integrity="sha512-FH8Ofw1HLbwK/UTvlNBxsfICDXYZBr9dPuTh3j17E5n1QZjaucKikW6UwMREFo7Z42AlIigHha3UVwWepr0Ujw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+   <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet">
+
+   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/node-vibrant@latest/dist/vibrant.min.js"></script>
+
+   <script src="https://t.contentsquare.net/uxa/1a978e3893856.js"></script>
+
+
+   <script id='sap-ui-bootstrap' src='./resources/sap-ui-core.js' data-sap-ui-theme='sap_belize'
+      data-sap-ui-resourceroots='{
+            "ui5gridlist": "./lib/ui5gridlist/",
+            "ui5plotly": "./lib/ui5plotly/",
+            "ui5highcharts": "./lib/ui5highcharts/",
+            "ui5chartjs": "./lib/ui5chartjs/",
+            "ui5chartjs3": "./lib/ui5chartjs3/",
+            "ui5filter": "./lib/ui5filter/",
+            "ui5card": "./lib/ui5card/",
+            "ui5flowchart": "./lib/ui5flowchart/",
+            "ui5overlapgrid": "./lib/ui5overlapgrid/",
+            "ui5leaflet": "./lib/ui5leaflet/",
+            "ui5datemap": "./lib/ui5datemap/",
+            "ui5dom": "./lib/ui5dom/",
+            "ui5menu": "./lib/ui5menu/"
+        }' data-sap-ui-libs='sap.tnt,sap.m,sap.ui.core,sap.ui.layout,sap.ui.table,sap.f'
+      data-sap-ui-xx-cachebuster="true" data-sap-ui-compatVersion='edge' data-sap-ui-preload='async'
+      data-sap-ui-logLevel="error">
+      </script>
+
+   <script id='uid-capacitor' src='./lib/@capacitor/core/dist/capacitor.js'></script>
+   <script id='uid-capcamera' src='./lib/@capacitor/camera/dist/plugin.js'></script>
+
+
+   <script id='uid-require' src='./lib/require/require.js'></script>
+   <script id='uid-dash' src='./lib/dash/dash.js'></script>
+   <script id='uid-coml' src='./lib/coml/coml.js'></script>
+
+   <link id='uid-dialog' href='./css/dialog.css' type="text/css" rel="stylesheet" media="print"
+      onload="this.media='all'" />
+   <link id='uid-variables' href='./css/variables.css' type="text/css" rel="stylesheet" media="print"
+      onload="this.media='all'" />
+   <link id='uid-dashboard' href='./css/dashboard.css' type="text/css" rel="stylesheet" media="print"
+      onload="this.media='all'" />
+   <link id='uid-process' href='./css/process.css' type="text/css" rel="stylesheet" media="print"
+      onload="this.media='all'" />
+   <link id='uid-mobile-grid' href='./css/mobile-overlap-grid.css' type="text/css" rel="stylesheet" />
+   <link id='uid-dash-css' href='./css/dash.css' type="text/css" rel="stylesheet" onload="this.media='all'" />
+   <link id='uid-fontcss' href='./css/font/stylesheet.css' type="text/css" rel="stylesheet" media="print"
+      onload="this.media='all'" />
+
+
+   <script id='uid-glass-js' src='./lib/glass/glass.js' defer></script>
+
+
+   <link id='uid-glass-css' href='./css/glass-base.css' type="text/css" rel="stylesheet" media="print"
+      onload="this.media='all'" />
+
+
+   <script id='uid-tngpp' src='./lib/TNGPP/TNGPP.js'></script>
+   <script id='uid-rsdk' src='./lib/rsdk/rsdk.js'></script>
+
+   <script id='uid-bootsinline'>
+      var _SERVERURL;
+      function startBooting(settings) {
+         sap.ui.require(["ui5dom/Dom", "ui5chartjs3/Numeral", "ui5card/Card", "ui5chartjs3/Control"], (domclass, numeralClass) => {
+            globalThis.ui5dom = {
+               Dom: domclass,
+               Numeral: numeralClass
+            }
+            require(['rsdk/cloud/StaticBoot'],
+               (staticBootModule) => {
+                  let boot = new staticBootModule.StaticBoot(settings);
+                  boot.start();
+               }
+            );
+         });
+      }
+      console.log("starting boot sequence: " + new Date().toLocaleTimeString());
+      sap.ui.getCore().attachInit(function () {
+         console.log("core initialized: " + new Date().toLocaleTimeString());
+         fetch('settings.json').then((response) => {
+            return response.text();
+         }).then((settings) => {
+            require.config({
+               paths: {
+                  "@capacitor/push-notifications": "../@capacitor/push-notifications/dist/plugin",
+                  "@azure/msal-browser": "lib/@azure/msal-browser/lib/msal-browser.min",
+                  "@capacitor/camera": "lib/@capacitor/camera/dist/plugin",
+
+               },
+            });
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            // If Capacitor 7 plugin registered as capacitorFilesystemPluginCapacitor
+            // if (typeof capacitorFilesystemPluginCapacitor !== 'undefined' && typeof capacitorFilesystem === 'undefined') {
+            //     window.capacitorFilesystem = capacitorFilesystemPluginCapacitor;
+            // }
+
+            // is there a project specified in the URL parameters - if so use it
+            // const project = urlParams.get('project') || urlParams.get('_project');
+            const organization = urlParams.get('organization') || urlParams.get('_organization');
+            // const appId = urlParams.get('appId') || urlParams.get('_appId');
+            let aiPrompt = new URLSearchParams(window.location.search).get("prompt") || sessionStorage.getItem("wm_prompt") || localStorage.getItem("wm_prompt");
+            let openAIBuilder = new URLSearchParams(window.location.search).get("openAdvisor") || sessionStorage.getItem("open_ai_advisor") || localStorage.getItem("open_ai_advisor");
+            let openPricingPage = new URLSearchParams(window.location.search).get("changePlan") || sessionStorage.getItem("open_pricing_page") || localStorage.getItem("open_pricing_page");
+
+            if (aiPrompt) {
+               console.log("Prompt received:", aiPrompt);
+               sessionStorage.setItem("wm_prompt", aiPrompt);
+               localStorage.setItem("wm_prompt", aiPrompt);
+            }
+            if (openAIBuilder) {
+               console.log("OpenAI Builder received:", openAIBuilder);
+               sessionStorage.setItem("open_ai_advisor", openAIBuilder);
+               localStorage.setItem("open_ai_advisor", openAIBuilder);
+            }
+            if (openPricingPage) {
+               console.log("Open Pricing Page received:", openPricingPage);
+               sessionStorage.setItem("open_pricing_page", openPricingPage);
+               localStorage.setItem("open_pricing_page", openPricingPage);
+            }
+
+            require(['config/AuthService'],
+               (authService) => {
+                  let auth = authService.AuthService.getInstance();
+                  // if (project && organization && appId) {
+                  if(organization){
+                     auth.setSettings(settings);
+                     let sKeyName = urlParams.get('_sessionKeyName') && urlParams.get('_sessionKeyName').trim().length > 0 ? urlParams.get('_sessionKeyName') : null;
+                     auth.acquireTokenSilently(null, sKeyName).then((result) => {
+                        startBooting(settings);
+                     }).catch(error => {
+                        startBooting(settings);
+                     });
+                  } else {
+                     globalThis.disableOfflineSupport = true; // only for WM - disable RSDK offline saving, as this costs time
+                     let sessionKeyName = window?.WindowConfig?.sessionKeyName;
+                     auth.setSettings(settings, sessionKeyName);
+                     auth.loginFuctionForAzure(() => {
+                        startBooting(settings);
+                     }).catch(error => {
+                        console.error("exception in authentication from azure AD B2C", error);
+                     });
+                  }
+               })
+         })
+      })
+
+   </script>
+   <style>
+      :root {
+         --brand-1: #0fd3a0;
+         --brand-2: #21e0b4;
+         --bg: #ffffff;
+         --text: #0b1a18;
+      }
+
+      .u-ws-loading * {
+         box-sizing: border-box;
+         margin: 0;
+         padding: 0;
+         font-family: "Poppins" !important;
+      }
+
+      .u-ws-loading {
+         height: 100%;
+         font-family: "Inter", "Poppins", sans-serif;
+         background: var(--bg);
+         color: var(--text);
+         overflow: hidden;
+      }
+
+      /* === Loader Container === */
+      .loader-screen {
+         position: fixed;
+         inset: 0;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         flex-direction: column;
+         background: var(--bg);
+         transition: opacity 0.5s ease;
+         z-index: 9999;
+      }
+
+      .loader-screen.hidden {
+         opacity: 0;
+         pointer-events: none;
+      }
+
+      /* === Orb Glow === */
+      .orb {
+         position: relative;
+         width: 180px;
+         height: 180px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 50%;
+         background: radial-gradient(circle at center, rgba(33, 224, 180, 0.12), rgba(15, 211, 160, 0.06));
+         animation: glow 3s ease-in-out infinite;
+      }
+
+      /* Use brand gradient glow instead of white */
+      @keyframes glow {
+
+         0%,
+         100% {
+            box-shadow:
+               0 0 40px 10px rgba(15, 211, 160, 0.25),
+               0 0 80px 25px rgba(33, 224, 180, 0.25),
+               0 0 130px 45px rgba(33, 224, 180, 0.15);
+            transform: scale(1);
+         }
+
+         50% {
+            box-shadow:
+               0 0 55px 20px rgba(33, 224, 180, 0.45),
+               0 0 110px 40px rgba(15, 211, 160, 0.35),
+               0 0 160px 70px rgba(33, 224, 180, 0.25);
+            transform: scale(1.05);
+         }
+      }
+
+      /* Logo pulse animation */
+      .orb img {
+         width: 70%;
+         filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+         animation: logoPulse 2.8s ease-in-out infinite;
+      }
+
+      @keyframes logoPulse {
+
+         0%,
+         100% {
+            transform: scale(1);
+         }
+
+         50% {
+            transform: scale(1.12);
+         }
+      }
+
+      /* === Text === */
+      .loading-text {
+         margin-top: 30px;
+         font-size: 1.1rem;
+         letter-spacing: 0.4px;
+         color: var(--text);
+         animation: fadeInOut 1.8s ease-in-out infinite;
+      }
+
+      @keyframes fadeInOut {
+
+         0%,
+         100% {
+            opacity: 0.5;
+         }
+
+         50% {
+            opacity: 1;
+         }
+      }
+
+      /* === Progress Dots === */
+      .dots {
+         margin-top: 12px;
+         display: flex;
+         gap: 8px;
+      }
+
+      .dots span {
+         width: 10px;
+         height: 10px;
+         border-radius: 50%;
+         background: var(--brand-1);
+         animation: bounce 1.4s infinite ease-in-out;
+      }
+
+      .dots span:nth-child(1) {
+         animation-delay: 0s;
+      }
+
+      .dots span:nth-child(2) {
+         animation-delay: 0.2s;
+      }
+
+      .dots span:nth-child(3) {
+         animation-delay: 0.4s;
+      }
+
+      @keyframes bounce {
+
+         0%,
+         80%,
+         100% {
+            transform: scale(1);
+            opacity: 0.5;
+         }
+
+         40% {
+            transform: scale(1.4);
+            opacity: 1;
+         }
+      }
+
+      /* === POPUPS === */
+      .overlay {
+         position: fixed;
+         inset: 0;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         background: rgba(0, 0, 0, 0.45);
+         backdrop-filter: blur(5px);
+         visibility: hidden;
+         opacity: 0;
+         transition: opacity 0.3s ease, visibility 0.3s ease;
+         z-index: 10000;
+      }
+
+      .overlay.active {
+         visibility: visible;
+         opacity: 1;
+      }
+
+      .popup {
+         background: rgba(255, 255, 255, 0.95);
+         border: 1px solid rgba(0, 0, 0, 0.1);
+         border-radius: 14px;
+         padding: 28px 32px;
+         max-width: 320px;
+         text-align: center;
+         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+         color: #111;
+      }
+
+      .popup h2 {
+         margin-bottom: 12px;
+         font-size: 1.1rem;
+      }
+
+      .popup p {
+         font-size: 0.95rem;
+         margin-bottom: 22px;
+         line-height: 1.4;
+      }
+
+      .popup .btn-row {
+         display: flex;
+         justify-content: center;
+         gap: 10px;
+      }
+
+      .popup button {
+         border: none;
+         border-radius: 8px;
+         padding: 10px 18px;
+         font-size: 0.95rem;
+         cursor: pointer;
+         background: linear-gradient(160deg, var(--brand-1), var(--brand-2));
+         color: #fff;
+         transition: opacity 0.25s ease;
+      }
+
+      .popup button:hover {
+         opacity: 0.8;
+      }
+
+      .popup .btn-outline {
+         background: transparent;
+         border: 1px solid var(--brand-1);
+         color: var(--brand-1);
+      }
+
+      .popup .btn-outline:hover {
+         background: var(--brand-1);
+         color: #fff;
+      }
+
+      /* === When slow connection detected === */
+      .orb.slow-glow {
+         animation: slowGlow 3s ease-in-out infinite !important;
+      }
+
+      /* Yellow â†’ Red glow for slow connection */
+      @keyframes slowGlow {
+
+         0%,
+         100% {
+            box-shadow:
+               0 0 40px 10px rgba(15, 211, 160, 0.3),
+               /* green */
+               0 0 90px 25px rgba(33, 224, 180, 0.25),
+               /* teal-green */
+               0 0 130px 45px rgba(240, 220, 80, 0.2);
+            /* hint of yellow */
+            transform: scale(1);
+         }
+
+         50% {
+            box-shadow:
+               0 0 55px 20px rgba(240, 220, 80, 0.45),
+               /* bright yellow glow */
+               0 0 110px 40px rgba(240, 210, 60, 0.35),
+               /* soft yellow edge */
+               0 0 160px 70px rgba(15, 211, 160, 0.25);
+            /* subtle green base */
+            transform: scale(1.05);
+         }
+      }
+
+
+      /* === When reload / serious delay detected === */
+      .orb.reload-glow {
+         animation: reloadGlow 3s ease-in-out infinite !important;
+      }
+
+      /* Yellow â†’ Red glow for reload/error state */
+      @keyframes reloadGlow {
+
+         0%,
+         100% {
+            box-shadow:
+               0 0 40px 10px rgba(255, 220, 80, 0.3),
+               0 0 90px 25px rgba(255, 150, 50, 0.3),
+               0 0 130px 45px rgba(255, 120, 40, 0.25);
+            transform: scale(1);
+         }
+
+         50% {
+            box-shadow:
+               0 0 60px 20px rgba(255, 60, 40, 0.45),
+               0 0 120px 40px rgba(255, 30, 30, 0.4),
+               0 0 160px 70px rgba(255, 10, 10, 0.35);
+            transform: scale(1.05);
+         }
+      }
+   </style>
+</head>
+
+<body class="sapUiBody" id='fiori' style="padding: 0;margin:0;">
+
+   <div class="u-ws-loading">
+      <div class="loader-screen" id="loader">
+         <div class="orb">
+            <img src="./images/WM-logo.png" alt="Workstream logo" />
+         </div>
+         <div class="loading-text" id="loadingText">Workmaster - setting things up...</div>
+         <div class="dots">
+            <span></span><span></span><span></span>
+         </div>
+      </div>
+      <div class="overlay" id="slowPopup">
+         <div class="popup">
+            <h2>Slow connection</h2>
+            <p>Your network seems a bit slow. Still working on it...</p>
+            <div class="btn-row">
+               <button id="slowClose" class="btn-outline">OK</button>
+            </div>
+         </div>
+      </div>
+
+      <!-- Popup 2: Something went wrong -->
+      <div class="overlay" id="errorPopup">
+         <div class="popup">
+            <h2>Something went wrong</h2>
+            <p>Unable to complete loading. Would you like to reload the page?</p>
+            <div class="btn-row">
+               <button id="reloadYes">Yes</button>
+               <button id="reloadNo" class="btn-outline">No</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <script>
+      const loader = document.getElementById('loader');
+      const app = document.getElementById('app');
+      const loadingText = document.getElementById('loadingText');
+      const orb = document.querySelector(".orb"); // ðŸ‘ˆ get the orb element
+
+      const messages = [
+         "Initializing...",
+         "Loading resources...",
+         "Workmaster - setting things up...",
+         "Preparing your workspace...",
+         "Almost ready..."
+      ];
+      let i = 0;
+      const msgInterval = setInterval(() => {
+         loadingText.textContent = messages[i++ % messages.length];
+      }, 10000);
+
+
+      // === POPUP LOGIC ===
+      const slowPopup = document.getElementById("slowPopup");
+      const errorPopup = document.getElementById("errorPopup");
+
+      // 1ï¸âƒ£ Show "Slow connection" after 30s if still loading
+      const slowTimer = setTimeout(() => {
+         if (!loader.classList.contains("hidden")) {
+            slowPopup.classList.add("active");
+            orb.classList.add("slow-glow"); // ðŸ‘ˆ change orb glow color
+         }
+      }, 30000);
+
+      // Close slow popup
+      document.getElementById("slowClose").onclick = () => {
+         slowPopup.classList.remove("active");
+      }
+
+      // 2ï¸âƒ£ Error popup: reload logic
+      const netTimer = setTimeout(() => {
+         if (!loader.classList.contains("hidden")) {
+            errorPopup.classList.add("active");
+            orb.classList.add("reload-glow"); // ðŸ‘ˆ change orb glow color
+         }
+      }, 60000);
+
+      document.getElementById("reloadYes").onclick = () => location.reload();
+      document.getElementById("reloadNo").onclick = () =>
+         errorPopup.classList.remove("active");
+
+      // Function to show error popup manually (call this anywhere)
+      window.showErrorPopup = () => errorPopup.classList.add("active");
+
+   </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"56379a81973a45c0b8dbce527f2eca6b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+
+</html>
+
+
+
+<!-- To run webstatic app locally 
+ 1. Make a separate project folder, clone dash
+ 2. on terminal "npm run build_web" 
+ 3. after use cmd "swa start --app-location . --output-location staticWebApp/public"-->
